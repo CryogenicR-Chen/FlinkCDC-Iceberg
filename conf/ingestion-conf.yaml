@@ -1,0 +1,59 @@
+#请填写source端数据库的连接信息
+source.type: mysql
+source.database.name: test_bm1
+source.username: rds
+source.password: 123456
+source.hostname: sloth-commerce-test2.jd.163.org
+source.port: 3332
+
+#读取source端数据的可选配置项
+source.table.name: *
+#source.scan.startup.mode: initial
+#source.server.timezone: Asia/Shanghai
+source.parallelism: 8
+hadoop.user.name: hdfs
+hadoop.home.dir: C:\Users\chenjianghan\Desktop\envtest
+#根据选择的sink端数据湖format的类型，填写相应信息
+#如果你选择了Arctic，请填写以下信息
+arctic.metastore.url: thrift://ams:1260/local_catalog
+arctic.optimize.enable: true
+##Arctic相关的可选配置项
+arctic.optimize.group.name: dbxxxx-group
+arctic.optimize.table.quota: customer:40,order_line:20,stock:50
+arctic.write.upsert.enable: true
+arctic.sink.parallelism: 4
+iceberg.test.total.size: true
+#如果你选择了Iceberg，请填写以下信息
+iceberg.uri: thrift://hz11-trino-arctic-0.jd.163.org:9083
+iceberg.warehouse: /user/warehouse
+iceberg.limited: false
+iceberg.limit.rate: 1024*1024
+#iceberg相关的可选配置项
+#iceberg.catalog-type: hive
+iceberg.write.upsert.enable: true
+iceberg.sink.parallelism: 4
+
+#如果你选择了Hudi，请填写以下信息
+hudi.catalog.path: /tmp/hive/warehouse
+hudi.hive_sync.metastore.uris: thrift://metastore:9083
+
+#hudi相关的可选配置项
+hudi.hive_sync.enable: true
+hudi.table.type: MERGE_ON_READ
+hudi.read.tasks: 4
+hudi.write.tasks: 4
+hudi.compaction.tasks: 4
+write.target-file-size-bytes: 134217728
+flink.checkpoint.timeout: 2400*1000
+#flink.num.task.slots: 8
+#flink.managed.memory.size: 512
+#flink.managed.memory.min: 128
+#flink.managed.memory.max: 1024
+#flink.managed.memory.fraction: 0.15
+#flink.framework.heap.memory:
+#flink.task.heap.memory: 24
+#flink.heartbeat.timeout: 80000
+flink.port: 8081
+#kafka.address: 10.196.98.26:9093
+kafka.address: 10.196.98.23:9094
+
