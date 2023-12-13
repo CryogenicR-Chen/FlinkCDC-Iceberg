@@ -49,6 +49,22 @@ CALL iceberg_catalog4.system.rollback_to_snapshot('db4551.supplier_iceberg', 714
 CALL iceberg_catalog4.system.rollback_to_snapshot('db4551.warehouse_iceberg', 6969833962445230510);
 ```
 
+在测基准的时候可能会需要回到后面的快照
+```
+CALL iceberg_catalog4.system.set_current_snapshot('db4551.customer_iceberg', 3685984477667245011);
+CALL iceberg_catalog4.system.set_current_snapshot('db4551.district_iceberg', 7254495687699382118);
+CALL iceberg_catalog4.system.set_current_snapshot('db4551.history_iceberg', 3930542970055817122);
+CALL iceberg_catalog4.system.set_current_snapshot('db4551.item_iceberg', 6292386753375876793);
+CALL iceberg_catalog4.system.set_current_snapshot('db4551.nation_iceberg', 6268883065396625097);
+CALL iceberg_catalog4.system.set_current_snapshot('db4551.new_order_iceberg', 6667032743996593681);
+CALL iceberg_catalog4.system.set_current_snapshot('db4551.oorder_iceberg', 8473427391720631830);
+CALL iceberg_catalog4.system.set_current_snapshot('db4551.order_line_iceberg', 1941622126754182383);
+CALL iceberg_catalog4.system.set_current_snapshot('db4551.region_iceberg', 4663524173198535819);
+CALL iceberg_catalog4.system.set_current_snapshot('db4551.stock_iceberg', 7330562848215019924);
+CALL iceberg_catalog4.system.set_current_snapshot('db4551.supplier_iceberg', 7149563024346994053);
+CALL iceberg_catalog4.system.set_current_snapshot('db4551.warehouse_iceberg', 1001736428873731528);
+```
+
 ### Kafka脚本
 在sloth-commerce-test1.jd.163.org 目录`cd /mnt/dfs/1/kafka_2.12-2.7.1/bin`下有create.sh用于生成topic delete.sh用于删除topic size2.sh用于计算topics的大小。
 
@@ -118,4 +134,21 @@ cd /home/arctic/spark/spark-3.3.2-bin-hadoop2/examples/jars
 
 /home/arctic/spark/spark-3.3.2-bin-hadoop2/bin/spark-submit  --master yarn --deploy-mode client --num-executors 5 --executor-memory 4505m --executor-cores 1 --class org.rewrite.SparkRewrite /home/arctic/spark/spark-3.3.2-bin-hadoop2/examples/jars/spark-rewrite-1.7-SNAPSHOT.jar -c iceberg_catalog4 -s db4551 -a -m rewrite -f 1 -p 5
 ```
+
+##注意事项
+1.定期清理Mysql的binlog ` PURGE BINARY LOGS TO 'mysql-bin.001800';` ！一般两个1000warehouse的库在加一些增量或者其他的库就会占满mysql datadir。
+2.Mysql binlog的存活时间是70天，有需要可以延长
+3.全量数据生成完，先导到kafka，然后再去生成增量
+4.长期运行Spark rewrite会导致Hdfs里的表变得非常大，一个库可能占3-5T的空间, 回滚到你想要保存的快照位置，然后开启table-expire.enabled去清理数据。
+5.全量数据损坏，可以考虑通过回滚然后从iceberg里导到另一个iceberg或者mixed-iceberg <br>
+`nohup java -Xmx125G -Xms125G -jar flink-2.0.jar -source iceberg- sink iceberg -confDir conf > 2output.txt 2>&1 &`
+这个流程如果数据量很大，source iceberg默认并发量很大考虑以下参数
+```
+flink.num.task.slots: 100
+iceberg.sink.parallelism: 50
+flink.network.memory.max: 940
+flink.network.memory.min: 940
+flink.network.memory.fraction: 0.1
+```
+
 	
