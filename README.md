@@ -1,9 +1,9 @@
 # FlinkCDC-Iceberg
 
-##参数格式
+## 参数格式
 -source [type] -sink [type] -confDir conf
 
-##流程
+## 流程
 1. Mysql to Kafka
 全量部分配置source.sink.mode: full  增量部分配置source.sink.mode: increment 和binlog位点
 nohup java -Xmx125G -Xms125G -jar flink-2.0.jar -source mysql -sink kafka -confDir conf > 2output.txt 2>&1 &
@@ -17,8 +17,8 @@ nohup java -Xmx125G -Xms125G -jar flink-2.0.jar -source kafka -sink iceberg -con
 3. Kafka to MixedIceberg
 nohup java -Xmx125G -Xms125G -jar flink-2.0.jar -source kafka -sink mixed-iceberg -confDir conf > 2output.txt 2>&1 &
 
-##脚本&命令
-###回滚iceberg
+## 脚本&命令
+### 回滚iceberg
 在sloth-commerce-test1.jd.163.org中启动spark sql 然后执行12张表的回滚sql 
 ```
 unset SPARK_HOME
@@ -49,10 +49,10 @@ CALL iceberg_catalog4.system.rollback_to_snapshot('db4551.supplier_iceberg', 714
 CALL iceberg_catalog4.system.rollback_to_snapshot('db4551.warehouse_iceberg', 6969833962445230510);
 ```
 
-###Kafka脚本
+### Kafka脚本
 在sloth-commerce-test1.jd.163.org 目录`cd /mnt/dfs/1/kafka_2.12-2.7.1/bin`下有create.sh用于生成topic delete.sh用于删除topic size2.sh用于计算topics的大小。
 
-###Trino 运行命令
+### Trino 运行命令
 在sloth-commerce-test1.jd.163.org
 这个Trino运行完会自动开启下一轮查询！
 ```
@@ -65,7 +65,7 @@ export PATH=/home/hadoop/presto/trino/trino-server-406/bin:$PATH
 cd /mnt/dfs/1/lakehouse-benchmark-21-SNAPSHOT/temp/lakehouse-benchmark-21-SNAPSHOT/
 nohup java -Dtpcc_name_suffix=_iceberg -jar lakehouse-benchmark.jar -b chbenchmarkForTrino -c config/trino/trino_chbenchmark_config.xml --create=false --load=false --execute=true > output.txt 2>&1 &
 ```
-###Benchmark
+### Benchmark
 在sloth-commerce-test1.jd.163.org
 ```
 export HADOOP_USER_NAME=sloth
@@ -78,7 +78,7 @@ cd /mnt/dfs/1/lakehouse-benchmark-21-SNAPSHOT
 nohup /home/arctic/jdk-17.0.3/bin/java -jar lakehouse-benchmark-suc.jar -b tpcc,chbenchmark -c config/mysql/sample_chbenchmark_config.xml --create=true --load=true > output.txt 2>&1 &
 nohup java -jar lakehouse-benchmark-suc.jar -b tpcc,chbenchmark -c config/mysql/sample_chbenchmark_config.xml --execute=true -s 5 > output.txt 2>&1 &
 
-###统计文件情况的脚本monitor.py
+### 统计文件情况的脚本monitor.py
 在 `cd /home/arctic/chenjianghantest/chenjianghan/workdir/lakehouse-benchmark-ingestion/real` 目录下
 运行可查看iceberg mixed-iceberg的表情况，记得改database和catalog，cookie会过期也需要改。
 脚本定期查看Trino状态，Trino挂掉会触发并查看表情况。（现在Trino的port是错的，运行查看当前表情况，需要监控时改成对的）
