@@ -2,9 +2,22 @@ package com.cdc.params;
 
 import java.sql.*;
 import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class MetaData {
-    public static Map<String, List<String>> getMetaData2(Properties properties, String tableName) {
+
+    public static Map<String, Map<String, List<String>>> tablesMetaData;
+
+    public static void getMetaData(Properties properties) {
+        String[] tables = BaseParameters.tables;
+        tablesMetaData = Arrays.stream(tables)
+                .collect(Collectors.toMap(Function.identity(), tableName -> getTableMetaData(properties, tableName)));
+    }
+
+    public static Map<String, List<String>> getTableMetaData(Properties properties, String tableName) {
+
+
         String url = properties.getProperty("url");
         String username = properties.getProperty("username");
         String password = properties.getProperty("password");
@@ -22,7 +35,7 @@ public class MetaData {
                 columnNames.add(columns.getString("COLUMN_NAME") + " " + columns.getString("TYPE_NAME"));
                 String columnType = columns.getString("TYPE_NAME");
                 Integer columnSize = columns.getInt("COLUMN_SIZE");
-                size += size(columnType,columnSize);
+                size += size(columnType, columnSize);
             }
             totalSize.add(size.toString());
             ResultSet primaryKeyResultSet = dbMetadata.getPrimaryKeys(conn.getCatalog(), databaseName, tableName);
@@ -40,13 +53,14 @@ public class MetaData {
 
         return metadata;
     }
-    public static int size(String columnType,Integer columnSize){
-        switch(columnType) {
+
+    public static int size(String columnType, Integer columnSize) {
+        switch (columnType) {
             case "INT":
             case "FLOAT":
                 return 4;
             case "DECIMAL":
-                return (int)Math.ceil((double)columnSize / 9);
+                return (int) Math.ceil((double) columnSize / 9);
             case "CHAR":
             case "VARCHAR":
                 return columnSize;
@@ -55,22 +69,5 @@ public class MetaData {
         }
         return 0;
     }
-    public static Map<String, String> getMetaData(Properties properties,String tableName){
-        String url = properties.getProperty("url");
-        String username = properties.getProperty("username");
-        String password = properties.getProperty("password");
-        Map<String, String> schema = new LinkedHashMap<>();
-        try (Connection con = DriverManager.getConnection(url, username, password)) {
-            DatabaseMetaData meta = con.getMetaData();
-            ResultSet resultSet = meta.getColumns(null, null, tableName, null);
-            while (resultSet.next()) {
-                String columnName = resultSet.getString("COLUMN_NAME");
-                String columnType = resultSet.getString("TYPE_NAME");
-                schema.put(columnName, columnType);
-            }
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-        return schema;
-    }
+
 }
