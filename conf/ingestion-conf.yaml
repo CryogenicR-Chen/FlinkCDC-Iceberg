@@ -5,21 +5,24 @@ source.password: 123456
 source.hostname: sloth-commerce-test2.jd.163.org
 source.port: 3332
 source.sink.mode: full
+#只有source.sink.mode为increment下面两个参数才会生效，这两个参数是binlog读取开始的位点
 source.sink.binlog.file: mysql-bin.001835
 source.sink.binlog.pos: 307708964
 
 #Hadoop配置
 hadoop.user.name: sloth
-#hadoop.home.dir:
+
 
 #Iceberg配置
 iceberg.uri: thrift://hz11-trino-arctic-0.jd.163.org:9083
 iceberg.warehouse: /user/warehouse
 iceberg.sink.parallelism: 4
+#iceberg的catalog为任意值，sink和source不一样就行
 iceberg.source.catalog: catalog1
 iceberg.source.database: db4564
 iceberg.sink.catalog: catalog2
-iceberg.sink.database: db4568
+iceberg.sink.database: db4570
+#下面两个参数mixed-iceberg可以共用
 iceberg.write.upsert.enable: true
 iceberg.optimize.group.name: default
 
@@ -29,12 +32,14 @@ mixed.iceberg.database: db4569
 
 #Kafka配置
 kafka.address: 10.196.98.23:9094
-kafka.topic: mysql-topic23-
+#每张表一个topic,kafka.topic是前缀
+kafka.topic: mysql-topic22-
 
 #Limiter配置
-limiter.limited: true
+limiter.limited: false
 limiter.limit.rate: 800
-limiter.test.total.size: true
+#这个参数开启用来查看限流的实际速度，在limiter.limited:true时可开启
+limiter.test.total.size: false
 
 #Flink配置
 flink.disable.operating.chain: true
@@ -44,3 +49,4 @@ flink.port: 8081
 #flink.network.memory.fraction: 0.1
 #flink.network.memory.max: 139
 #flink.network.memory.min: 139
+
