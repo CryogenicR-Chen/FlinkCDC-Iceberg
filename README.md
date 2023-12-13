@@ -4,17 +4,17 @@
 -source [type] -sink [type] -confDir conf
 
 ## 流程
-1. Mysql to Kafka
-全量部分配置source.sink.mode: full  增量部分配置source.sink.mode: increment 和binlog位点
+1. Mysql to Kafka <br>
+全量部分配置source.sink.mode: full  增量部分配置source.sink.mode: increment 和binlog位点 <br>
 nohup java -Xmx125G -Xms125G -jar flink-2.0.jar -source mysql -sink kafka -confDir conf > 2output.txt 2>&1 &
 
-2. Kafka to Iceberg
-配置iceberg.sink.catalog: catalog2  iceberg.sink.database: db4570
-配置iceberg.write.upsert.enable: true 开启upsert
-配置iceberg.optimize.group.name: bench_group 开启optimizer
+2. Kafka to Iceberg <br>
+配置iceberg.sink.catalog: catalog2  iceberg.sink.database: db4570 <br>
+配置iceberg.write.upsert.enable: true 开启upsert <br>
+配置iceberg.optimize.group.name: bench_group 开启optimizer <br>
 nohup java -Xmx125G -Xms125G -jar flink-2.0.jar -source kafka -sink iceberg -confDir conf > 2output.txt 2>&1 &
 
-3. Kafka to MixedIceberg
+3. Kafka to MixedIceberg <br>
 nohup java -Xmx125G -Xms125G -jar flink-2.0.jar -source kafka -sink mixed-iceberg -confDir conf > 2output.txt 2>&1 &
 
 ## 脚本&命令
@@ -53,7 +53,7 @@ CALL iceberg_catalog4.system.rollback_to_snapshot('db4551.warehouse_iceberg', 69
 在sloth-commerce-test1.jd.163.org 目录`cd /mnt/dfs/1/kafka_2.12-2.7.1/bin`下有create.sh用于生成topic delete.sh用于删除topic size2.sh用于计算topics的大小。
 
 ### Trino 运行命令
-在sloth-commerce-test1.jd.163.org
+在sloth-commerce-test1.jd.163.org <br>
 这个Trino运行完会自动开启下一轮查询！
 ```
 export HADOOP_USER_NAME=sloth
@@ -81,30 +81,30 @@ nohup java -jar lakehouse-benchmark-suc.jar -b tpcc,chbenchmark -c config/mysql/
 
 ### 统计文件情况的脚本monitor.py
 在 `cd /home/arctic/chenjianghantest/chenjianghan/workdir/lakehouse-benchmark-ingestion/real` 目录下
-运行可查看iceberg mixed-iceberg的表情况，记得改database和catalog，cookie会过期也需要改。
+运行可查看iceberg mixed-iceberg的表情况，记得改database和catalog，cookie会过期也需要改。 <br>
 脚本定期查看Trino状态，Trino挂掉会触发并查看表情况。（现在Trino的port是错的，运行查看当前表情况，需要监控时改成对的）
 
-###启动Optimizer
-在sloth-commerce-test1.jd.163.org
+### 启动Optimizer
+在sloth-commerce-test1.jd.163.org <br>
  内存 =  -Dtaskmanager.memory.process.size=4430m * 并发 -p 3  + -Djobmanager.memory.process.size=1024m
 ```
 export FLINK_CONF_DIR=/home/arctic/arctic-flink/flink-1.12.7/conf && export HADOOP_USER_NAME=sloth && export HADOOP_CONF_DIR=/home/hadoop/presto/trino-online-env && /home/arctic/flink-1.14.6/bin/flink run --target=yarn-per-job -Dtaskmanager.memory.process.size=4430m -Djobmanager.memory.process.size=1024m -Dtaskmanager.memory.managed.size=32m -c com.netease.arctic.optimizer.flink.FlinkOptimizer /home/arctic/wangtao3/optimizer-job.jar  -a thrift://10.196.98.26:18151 -p 3 -g bench_group -eds -dsp /tmp -msz 512
 ```
-###启动Spark Rewrite
-在sloth-commerce-test1.jd.163.org
-内存  = --executor-memory 4505m *  --num-executors 5 * --executor-cores 1
--c iceberg_catalog4 设置catalog   -s db4551 设置库
--m rewrite 这个参数没用，写上就行
--f 1 rewrite循环频率，单位是秒
--a 12张表rewrite
-如果没有-a的话 -t table_name 参数可以指定rewrite某一张表
--p 的取值为0-5，分别对应了以下sql，根据你需要的sql选择
-String.format("CALL %s.system.rewrite_data_files('%s.%s')", CATALOG, DB, localTableName);
-String.format("CALL %s.system.rewrite_data_files(table => '%s.%s', options => map('min-input-files','2','rewrite-all','true'))", CATALOG, DB, localTableName);
-String.format("CALL %s.system.rewrite_data_files(table => '%s.%s', options => map('min-input-files','2','rewrite-all','false'))", CATALOG, DB, localTableName);
-String.format("CALL %s.system.rewrite_data_files(table => '%s.%s', options => map('delete-file-threshold','5'))", CATALOG, DB, localTableName);
-String.format("CALL %s.system.rewrite_data_files(table => '%s.%s', options => map('delete-file-threshold','5','rewrite-all','true'))", CATALOG, DB, localTableName);
-String.format("CALL %s.system.rewrite_data_files(table => '%s.%s', options => map('rewrite-all','true'))", CATALOG, DB, localTableName);
+### 启动Spark Rewrite
+在sloth-commerce-test1.jd.163.org <br>
+内存  = --executor-memory 4505m *  --num-executors 5 * --executor-cores 1 <br>
+-c iceberg_catalog4 设置catalog   -s db4551 设置库 <br>
+-m rewrite 这个参数没用，写上就行 <br>
+-f 1 rewrite循环频率，单位是秒 <br>
+-a 12张表rewrite <br>
+如果没有-a的话 -t table_name 参数可以指定rewrite某一张表 <br>
+-p 的取值为0-5，分别对应了以下sql，根据你需要的sql选择 <br>
+String.format("CALL %s.system.rewrite_data_files('%s.%s')", CATALOG, DB, localTableName); <br>
+String.format("CALL %s.system.rewrite_data_files(table => '%s.%s', options => map('min-input-files','2','rewrite-all','true'))", CATALOG, DB, localTableName); <br>
+String.format("CALL %s.system.rewrite_data_files(table => '%s.%s', options => map('min-input-files','2','rewrite-all','false'))", CATALOG, DB, localTableName); <br>
+String.format("CALL %s.system.rewrite_data_files(table => '%s.%s', options => map('delete-file-threshold','5'))", CATALOG, DB, localTableName); <br>
+String.format("CALL %s.system.rewrite_data_files(table => '%s.%s', options => map('delete-file-threshold','5','rewrite-all','true'))", CATALOG, DB, localTableName); <br>
+String.format("CALL %s.system.rewrite_data_files(table => '%s.%s', options => map('rewrite-all','true'))", CATALOG, DB, localTableName); <br>
 
 ```
 unset SPARK_HOME
