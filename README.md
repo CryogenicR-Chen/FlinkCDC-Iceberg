@@ -1,8 +1,9 @@
 # FlinkCDC-Iceberg
 
 ## 参数格式
--source [type] -sink [type] -confDir conf
-
+-source [type] -sink [type] -confDir conf <br>
+source : mysql, iceberg, kafka <br>
+sink : kafka, iceberg, mixed-iceberg
 ## 流程
 1. Mysql to Kafka <br>
 全量部分配置source.sink.mode: full  增量部分配置source.sink.mode: increment 和binlog位点 <br>
