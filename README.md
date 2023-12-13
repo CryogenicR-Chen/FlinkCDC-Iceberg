@@ -77,10 +77,45 @@ export PATH=/home/hadoop/presto/trino/trino-server-406/bin:$PATH
 cd /mnt/dfs/1/lakehouse-benchmark-21-SNAPSHOT
 nohup /home/arctic/jdk-17.0.3/bin/java -jar lakehouse-benchmark-suc.jar -b tpcc,chbenchmark -c config/mysql/sample_chbenchmark_config.xml --create=true --load=true > output.txt 2>&1 &
 nohup java -jar lakehouse-benchmark-suc.jar -b tpcc,chbenchmark -c config/mysql/sample_chbenchmark_config.xml --execute=true -s 5 > output.txt 2>&1 &
+```
 
 ### 统计文件情况的脚本monitor.py
 在 `cd /home/arctic/chenjianghantest/chenjianghan/workdir/lakehouse-benchmark-ingestion/real` 目录下
 运行可查看iceberg mixed-iceberg的表情况，记得改database和catalog，cookie会过期也需要改。
 脚本定期查看Trino状态，Trino挂掉会触发并查看表情况。（现在Trino的port是错的，运行查看当前表情况，需要监控时改成对的）
 
+###启动Optimizer
+在sloth-commerce-test1.jd.163.org
+ 内存 =  -Dtaskmanager.memory.process.size=4430m * 并发 -p 3  + -Djobmanager.memory.process.size=1024m
+```
+export FLINK_CONF_DIR=/home/arctic/arctic-flink/flink-1.12.7/conf && export HADOOP_USER_NAME=sloth && export HADOOP_CONF_DIR=/home/hadoop/presto/trino-online-env && /home/arctic/flink-1.14.6/bin/flink run --target=yarn-per-job -Dtaskmanager.memory.process.size=4430m -Djobmanager.memory.process.size=1024m -Dtaskmanager.memory.managed.size=32m -c com.netease.arctic.optimizer.flink.FlinkOptimizer /home/arctic/wangtao3/optimizer-job.jar  -a thrift://10.196.98.26:18151 -p 3 -g bench_group -eds -dsp /tmp -msz 512
+```
+###启动Spark Rewrite
+在sloth-commerce-test1.jd.163.org
+内存  = --executor-memory 4505m *  --num-executors 5 * --executor-cores 1
+-c iceberg_catalog4 设置catalog   -s db4551 设置库
+-m rewrite 这个参数没用，写上就行
+-f 1 rewrite循环频率，单位是秒
+-a 12张表rewrite
+如果没有-a的话 -t table_name 参数可以指定rewrite某一张表
+-p 的取值为0-5，分别对应了以下sql，根据你需要的sql选择
+String.format("CALL %s.system.rewrite_data_files('%s.%s')", CATALOG, DB, localTableName);
+String.format("CALL %s.system.rewrite_data_files(table => '%s.%s', options => map('min-input-files','2','rewrite-all','true'))", CATALOG, DB, localTableName);
+String.format("CALL %s.system.rewrite_data_files(table => '%s.%s', options => map('min-input-files','2','rewrite-all','false'))", CATALOG, DB, localTableName);
+String.format("CALL %s.system.rewrite_data_files(table => '%s.%s', options => map('delete-file-threshold','5'))", CATALOG, DB, localTableName);
+String.format("CALL %s.system.rewrite_data_files(table => '%s.%s', options => map('delete-file-threshold','5','rewrite-all','true'))", CATALOG, DB, localTableName);
+String.format("CALL %s.system.rewrite_data_files(table => '%s.%s', options => map('rewrite-all','true'))", CATALOG, DB, localTableName);
 
+```
+unset SPARK_HOME
+unset SPARK_CONF_DIR
+unset HADOOP_CONF_DIR
+export SPARK_HOME=/home/arctic/spark/spark-3.3.2-bin-hadoop2 
+export SPARK_CONF_DIR=/home/arctic/spark/spark-3.3.2-bin-hadoop2/conf
+export YARN_CONF_DIR=/home/arctic/spark/conf
+export HADOOP_CONF_DIR=/home/arctic/spark/conf
+cd /home/arctic/spark/spark-3.3.2-bin-hadoop2/examples/jars
+
+/home/arctic/spark/spark-3.3.2-bin-hadoop2/bin/spark-submit  --master yarn --deploy-mode client --num-executors 5 --executor-memory 4505m --executor-cores 1 --class org.rewrite.SparkRewrite /home/arctic/spark/spark-3.3.2-bin-hadoop2/examples/jars/spark-rewrite-1.7-SNAPSHOT.jar -c iceberg_catalog4 -s db4551 -a -m rewrite -f 1 -p 5
+```
+	
