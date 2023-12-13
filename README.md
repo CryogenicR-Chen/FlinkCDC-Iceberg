@@ -135,7 +135,7 @@ cd /home/arctic/spark/spark-3.3.2-bin-hadoop2/examples/jars
 /home/arctic/spark/spark-3.3.2-bin-hadoop2/bin/spark-submit  --master yarn --deploy-mode client --num-executors 5 --executor-memory 4505m --executor-cores 1 --class org.rewrite.SparkRewrite /home/arctic/spark/spark-3.3.2-bin-hadoop2/examples/jars/spark-rewrite-1.7-SNAPSHOT.jar -c iceberg_catalog4 -s db4551 -a -m rewrite -f 1 -p 5
 ```
 
-##注意事项
+##  注意事项
 1.定期清理Mysql的binlog ` PURGE BINARY LOGS TO 'mysql-bin.001800';` ！一般两个1000warehouse的库在加一些增量或者其他的库就会占满mysql datadir。
 2.Mysql binlog的存活时间是70天，有需要可以延长
 3.全量数据生成完，先导到kafka，然后再去生成增量
@@ -150,5 +150,5 @@ flink.network.memory.max: 940
 flink.network.memory.min: 940
 flink.network.memory.fraction: 0.1
 ```
-
+	
 	
