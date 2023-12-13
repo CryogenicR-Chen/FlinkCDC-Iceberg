@@ -137,6 +137,8 @@ cd /home/arctic/spark/spark-3.3.2-bin-hadoop2/examples/jars
 ```
 
 ##  注意事项
+0. 运行trino查询前，或者发现amoro看不到表时，在hz11 hdfs用户下执行`hdfs dfs -chmod -R 777  /user/test_warehouse/db4569
+`开启权限！
 1.定期清理Mysql的binlog ` PURGE BINARY LOGS TO 'mysql-bin.001800';` ！一般两个1000warehouse的库在加一些增量或者其他的库就会占满mysql datadir。<br>
 2.Mysql binlog的存活时间是70天，有需要可以延长 <br>
 3.全量数据生成完，先导到kafka，然后再去生成增量 <br>
