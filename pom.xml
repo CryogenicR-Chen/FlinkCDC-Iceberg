@@ -71,13 +71,7 @@
     </pluginRepositories>
 
     <dependencies>
-        <dependency>
-            <groupId>jdk.tools</groupId>
-            <artifactId>jdk.tools</artifactId>
-            <version>1.7</version>
-            <scope>system</scope>
-            <systemPath>C:/Users/chenjianghan/.jdks/corretto-17.0.8.1/lib/tools.jar</systemPath>
-        </dependency>
+
         <dependency>
             <groupId>org.apache.flink</groupId>
             <artifactId>flink-connector-kafka</artifactId>
