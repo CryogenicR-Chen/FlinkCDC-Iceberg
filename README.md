@@ -152,7 +152,8 @@ python get.py
 4.长期运行Spark rewrite会导致Hdfs里的表变得非常大，一个库可能占3-5T的空间, 回滚到你想要保存的快照位置，然后开启table-expire.enabled去清理数据。<br>
 5.全量数据损坏，可以考虑通过回滚然后从iceberg里导到另一个iceberg或者mixed-iceberg <br>
 `nohup java -Xmx125G -Xms125G -jar flink-2.0.jar -source iceberg- sink iceberg -confDir conf > 2output.txt 2>&1 &`
-这个流程如果数据量很大，source iceberg默认并发量很大考虑以下参数```
+这个流程如果数据量很大，source iceberg默认并发量很大考虑以下参数
+```
 flink.num.task.slots: 100
 iceberg.sink.parallelism: 50
 flink.network.memory.max: 940
