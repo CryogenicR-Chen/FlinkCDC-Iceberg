@@ -18,6 +18,9 @@ nohup java -Xmx125G -Xms125G -jar flink-2.0.jar -source kafka -sink iceberg -con
 3. Kafka to MixedIceberg <br>
 nohup java -Xmx125G -Xms125G -jar flink-2.0.jar -source kafka -sink mixed-iceberg -confDir conf > 2output.txt 2>&1 &
 
+这个程序的运行位置在sloth-commerce-test2.jd.163.org `cd /home/arctic/chenjianghantest/chenjianghan/workdir/lakehouse-benchmark-ingestion/real` <br>
+mysql-topic14- 为前缀的kafka topic存的增量数据 <br>
+Native Iceberg db4551 有全量数据，回滚的脚本如下 <br>
 ## 脚本&命令
 ### 回滚iceberg
 在sloth-commerce-test1.jd.163.org中启动spark sql 然后执行12张表的回滚sql 
