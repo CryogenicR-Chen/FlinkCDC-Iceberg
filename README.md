@@ -135,6 +135,13 @@ cd /home/arctic/spark/spark-3.3.2-bin-hadoop2/examples/jars
 
 /home/arctic/spark/spark-3.3.2-bin-hadoop2/bin/spark-submit  --master yarn --deploy-mode client --num-executors 5 --executor-memory 4505m --executor-cores 1 --class org.rewrite.SparkRewrite /home/arctic/spark/spark-3.3.2-bin-hadoop2/examples/jars/spark-rewrite-1.7-SNAPSHOT.jar -c iceberg_catalog4 -s db4551 -a -m rewrite -f 1 -p 5
 ```
+### 收集Trino查询结果脚本
+在sloth-commerce-test1.jd.163.org <br>
+在get.py修改日期前缀（你要查哪天的数据）
+```
+/mnt/dfs/1/lakehouse-benchmark-21-SNAPSHOT/temp/lakehouse-benchmark-21-SNAPSHOT/results
+python get.py
+```
 
 ##  注意事项
 0. 运行trino查询前，或者发现amoro看不到表时，在hz11 hdfs用户下执行`hdfs dfs -chmod -R 777  /user/test_warehouse/db4569
