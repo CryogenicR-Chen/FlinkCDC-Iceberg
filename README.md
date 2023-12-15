@@ -136,7 +136,7 @@ export YARN_CONF_DIR=/home/arctic/spark/conf
 export HADOOP_CONF_DIR=/home/arctic/spark/conf
 cd /home/arctic/spark/spark-3.3.2-bin-hadoop2/examples/jars
 
-/home/arctic/spark/spark-3.3.2-bin-hadoop2/bin/spark-submit  --master yarn --deploy-mode client --num-executors 5 --executor-memory 4505m --executor-cores 1 --class org.rewrite.SparkRewrite /home/arctic/spark/spark-3.3.2-bin-hadoop2/examples/jars/spark-rewrite-1.7-SNAPSHOT.jar -c iceberg_catalog4 -s db4551 -a -m rewrite -f 1 -p 5
+nohup /home/arctic/spark/spark-3.3.2-bin-hadoop2/bin/spark-submit  --master yarn --deploy-mode client --num-executors 10 --executor-memory 4330m --executor-cores 1 --class org.rewrite.SparkRewrite /home/arctic/spark/spark-3.3.2-bin-hadoop2/examples/jars/spark-rewrite-1.7-SNAPSHOT.jar -c iceberg_catalog4 -s db4581 -a -m rewrite -f 1 -p 5 > output.txt 2>&1 &
 ```
 ### 收集Trino查询结果脚本
 在sloth-commerce-test1.jd.163.org <br>
